@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SmartSchool.WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using SmartSchool.WebAPI.Data.Repositories;
 
 namespace SmartSchool.WebAPI
 {
@@ -31,7 +32,8 @@ namespace SmartSchool.WebAPI
             services.AddDbContext<SmartContext>(
                 context => context.UseSqlite(Configuration.GetConnectionString("Default"))
             );
-            
+            services.AddScoped<IRepository, Repository>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

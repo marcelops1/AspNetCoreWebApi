@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartSchool.WebAPI.Data;
+using SmartSchool.WebAPI.Data.Repositories;
 using SmartSchool.WebAPI.Models;
 
 namespace SmartSchool.WebAPI.Controllers
@@ -12,11 +13,14 @@ namespace SmartSchool.WebAPI.Controllers
     public class AlunoController : ControllerBase
     {
         private readonly SmartContext _context;
+        private readonly IRepository _repo;
 
-        public AlunoController(SmartContext context)
+        public AlunoController(SmartContext context, IRepository repo)
         {
             _context = context;
+            _repo = repo;
         }
+
 
         [HttpGet]
         public IActionResult Get()
@@ -48,9 +52,10 @@ namespace SmartSchool.WebAPI.Controllers
         [HttpPost]
         public IActionResult Post(Aluno aluno)
         {
-            _context.Add(aluno);
-            _context.SaveChanges();
-            return Ok(aluno);
+            _repo.Add(aluno);
+            if (_repo.SaveChanges()) return Ok(aluno);
+
+            return BadRequest("Aluno não cadastrado");
         }
 
         [HttpPut("{id}")]
@@ -58,9 +63,11 @@ namespace SmartSchool.WebAPI.Controllers
         {
             var alu = _context.Alunos.AsNoTracking().FirstOrDefault(a => a.Id == id);
             if (alu == null) return NoContent();
-            _context.Update(aluno);
-            _context.SaveChanges();
-            return Ok(aluno);
+
+            _repo.Update(aluno);
+            if (_repo.SaveChanges()) return Ok(aluno);
+
+            return BadRequest("Aluno não atualizado");
         }
 
         [HttpPatch("{id}")]
@@ -68,9 +75,11 @@ namespace SmartSchool.WebAPI.Controllers
         {
             var alu = _context.Alunos.AsNoTracking().FirstOrDefault(a => a.Id == id);
             if (alu == null) return NoContent();
-            _context.Update(aluno);
-            _context.SaveChanges();
-            return Ok(aluno);
+
+            _repo.Update(aluno);
+            if (_repo.SaveChanges()) return Ok(aluno);
+
+            return BadRequest("Aluno não atualizado");
         }
 
         [HttpDelete("{id}")]
@@ -78,9 +87,11 @@ namespace SmartSchool.WebAPI.Controllers
         {
             var aluno = _context.Alunos.FirstOrDefault(a => a.Id == id);
             if (aluno == null) return NoContent();
-            _context.Remove(aluno);
-            _context.SaveChanges();
-            return Ok();
+
+            _repo.Remove(aluno);
+            if (_repo.SaveChanges()) return Ok("Aluno removido");
+
+            return BadRequest("Aluno não removido");
         }
     }
 }
