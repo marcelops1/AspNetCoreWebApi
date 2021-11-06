@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using SmartSchool.WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using SmartSchool.WebAPI.Data.Repositories;
+
 
 namespace SmartSchool.WebAPI
 {
@@ -32,11 +34,15 @@ namespace SmartSchool.WebAPI
             services.AddDbContext<SmartContext>(
                 context => context.UseSqlite(Configuration.GetConnectionString("Default"))
             );
-            services.AddScoped<IRepository, Repository>();
+
 
             services.AddControllers()
                     .AddNewtonsoftJson(
                         opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddScoped<IRepository, Repository>();
 
             services.AddSwaggerGen(c =>
             {
